@@ -21,9 +21,33 @@ void main() {
 	// read from GBuffers
 
 	vec4 gb2 = texture(u_gb2, fs_UV);
+	vec4 gb0 = texture(u_gb0, fs_UV);
+
+	 // Calculate the diffuse term for Lambert shading
+	vec3 lightPos = u_CamPos.xyz - vec3(0, 0, 0);  // Compute the direction in which the light source lies
+
+    float diffuseTerm = dot(normalize(gb0.xyz), normalize(lightPos));
+    // Avoid negative lighting values
+    diffuseTerm = clamp(diffuseTerm, 0.0, 1.0);
+
+	float ambientTerm = 0.2;
+
+    float lightIntensity = diffuseTerm + ambientTerm;
 
 	vec3 col = gb2.xyz;
-	col = gb2.xyz;
 
-	out_Col = vec4(col, 1.0);
+	// Compute final shaded color
+    out_Col = vec4(col * lightIntensity, 1.0);
+
+	
+
+
+
+   
+
+      //Add a small float value to the color multiplier
+                                                        //to simulate ambient lighting. This ensures that faces that are not
+                                                        //lit by our point light are not completely black.
+
+
 }

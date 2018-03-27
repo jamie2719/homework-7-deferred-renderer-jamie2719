@@ -16,12 +16,15 @@ out vec4 fs_Pos;
 out vec4 fs_Nor;            
 out vec4 fs_Col;           
 out vec2 fs_UV;
+out float depth;
 
 void main()
 {
     fs_Col = vs_Col;
     fs_UV = vs_UV;
     fs_UV.y = 1.0 - fs_UV.y;
+
+    depth = vs_Pos.z;
 
     // fragment info is in view space
     mat3 invTranspose = mat3(u_ModelInvTr);

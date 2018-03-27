@@ -5,6 +5,7 @@ in vec4 fs_Pos;
 in vec4 fs_Nor;
 in vec4 fs_Col;
 in vec2 fs_UV;
+in float depth;
 
 out vec4 fragColor[3]; // The data in the ith index of this array of outputs
                        // is passed to the ith index of OpenGLRenderer's
@@ -13,11 +14,11 @@ out vec4 fragColor[3]; // The data in the ith index of this array of outputs
                        // such as albedo, normal, and position, as
                        // separate images from a single render pass.
 
+
 uniform sampler2D tex_Color;
 
 
 void main() {
-    // TODO: pass proper data into gbuffers
     // Presently, the provided shader passes "nothing" to the first
     // two gbuffers and basic color to the third.
 
@@ -26,7 +27,9 @@ void main() {
     // if using textures, inverse gamma correct
     col = pow(col, vec3(2.2));
 
-    fragColor[0] = vec4(0.0);
-    fragColor[1] = vec4(0.0);
-    fragColor[2] = vec4(col, 1.0);
+   // float depth;
+
+    fragColor[0] = vec4(vec3(fs_Nor), depth); //World-space surface normal of the fragment and camera space depth
+    fragColor[1] = vec4(0.0); 
+    fragColor[2] = vec4(col, 1.0); //albedo (base color) of the fragment
 }
