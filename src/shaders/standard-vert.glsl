@@ -24,13 +24,18 @@ void main()
     fs_UV = vs_UV;
     fs_UV.y = 1.0 - fs_UV.y;
 
-    depth = vs_Pos.z;
 
     // fragment info is in view space
     mat3 invTranspose = mat3(u_ModelInvTr);
     mat3 view = mat3(u_View);
     fs_Nor = vec4(view * invTranspose * vec3(vs_Nor), 0);
-    fs_Pos = u_View * u_Model * vs_Pos;
+    vec4 temp = u_View * u_Model * vs_Pos;
+    fs_Pos = temp;
+
+    temp = u_Proj * temp;
+    depth = temp.z / temp.w;
+
+
     
     gl_Position = u_Proj * u_View * u_Model * vs_Pos;
 }
