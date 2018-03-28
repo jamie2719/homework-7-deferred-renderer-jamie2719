@@ -24,7 +24,7 @@ void main() {
 	vec4 gb0 = texture(u_gb0, fs_UV);
 
 	 // Calculate the diffuse term for Lambert shading
-	vec3 lightPos = u_CamPos.xyz - vec3(0, 0, 0);  // Compute the direction in which the light source lies
+	vec3 lightPos = vec3(5, 5, 0);  // Compute the direction in which the light source lies
 
     float diffuseTerm = dot(normalize(gb0.xyz), normalize(lightPos));
     // Avoid negative lighting values
