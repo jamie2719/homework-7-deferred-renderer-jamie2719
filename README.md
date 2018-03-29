@@ -1,5 +1,7 @@
 I implemented motion blur and depth of field for my post processing effects. I could not get the two post process shaders to work together, so please comment one or the other out in OpenGLRenderer to grade each one. I also tried to implement a GUI menu to select which effect is applied, but I could not get it connected properly.
 
+Demo link: https://jamie2719.github.io/homework-7-deferred-renderer-jamie2719/
+
 
 
 
