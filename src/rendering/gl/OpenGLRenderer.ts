@@ -72,7 +72,7 @@ class OpenGLRenderer {
     //this.add32BitPass(new PostProcess(new Shader(gl.FRAGMENT_SHADER, require('../../shaders/examplePost3-frag.glsl'))));
 
     this.add8BitPass(new PostProcess(new Shader(gl.FRAGMENT_SHADER, require('../../shaders/depth-of-field-frag.glsl'))));
-    //this.add8BitPass(new PostProcess(new Shader(gl.FRAGMENT_SHADER, require('../../shaders/motion-blur-frag.glsl'))));
+    this.add8BitPass(new PostProcess(new Shader(gl.FRAGMENT_SHADER, require('../../shaders/motion-blur-frag.glsl'))));
     
 
     if (!gl.getExtension("OES_texture_float_linear")) {
