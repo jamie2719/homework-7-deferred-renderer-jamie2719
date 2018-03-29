@@ -5,6 +5,7 @@ import {gl} from '../../globals';
 import ShaderProgram, {Shader} from './ShaderProgram';
 import PostProcess from './PostProcess'
 import Square from '../../geometry/Square';
+import {currPassIndex} from '../../main'
 
 
 class OpenGLRenderer {
@@ -71,6 +72,7 @@ class OpenGLRenderer {
     //this.add32BitPass(new PostProcess(new Shader(gl.FRAGMENT_SHADER, require('../../shaders/examplePost3-frag.glsl'))));
 
     this.add8BitPass(new PostProcess(new Shader(gl.FRAGMENT_SHADER, require('../../shaders/depth-of-field-frag.glsl'))));
+    //this.add8BitPass(new PostProcess(new Shader(gl.FRAGMENT_SHADER, require('../../shaders/motion-blur-frag.glsl'))));
     
 
     if (!gl.getExtension("OES_texture_float_linear")) {
@@ -218,6 +220,7 @@ class OpenGLRenderer {
     let model = mat4.create();
     let viewProj = mat4.create();
     let view = camera.viewMatrix;
+    let viewPrev = camera.viewMatrixPrev;
     let proj = camera.projectionMatrix;
     let color = vec4.fromValues(0.5, 0.5, 0.5, 1);
 
@@ -227,6 +230,8 @@ class OpenGLRenderer {
     gbProg.setViewProjMatrix(viewProj);
     gbProg.setGeometryColor(color);
     gbProg.setViewMatrix(view);
+    gbProg.setViewMatrixPrev(viewPrev);
+
     gbProg.setProjMatrix(proj);
 
     gbProg.setTime(this.currentTime);
@@ -247,8 +252,11 @@ class OpenGLRenderer {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     let view = camera.viewMatrix;
+    let viewPrev = camera.viewMatrixPrev;
     let proj = camera.projectionMatrix;
     this.deferredShader.setViewMatrix(view);
+    this.deferredShader.setViewMatrixPrev(viewPrev);
+
     this.deferredShader.setProjMatrix(proj);
 
     for (let i = 0; i < this.gbTargets.length; i ++) {
@@ -322,27 +330,34 @@ class OpenGLRenderer {
     // TODO: replace this with your post 8-bit pipeline
     // the loop shows how to swap between frame buffers and textures given a list of processes,
     // but specific shaders (e.g. motion blur) need specific info as textures
-    for (let i = 0; i < this.post8Passes.length; i++){
-      // pingpong framebuffers for each pass
-      // if this is the last pass, default is bound
+
+    for (let i = 0; i < this.post8Passes.length; i++) {
+      //if(i == currPassIndex) {
+              // pingpong framebuffers for each pass
+          // if this is the last pass, default is bound
       if (i < this.post8Passes.length - 1) gl.bindFramebuffer(gl.FRAMEBUFFER, this.post8Buffers[(i + 1) % 2]);
       else gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-      gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-      gl.disable(gl.DEPTH_TEST);
-      gl.enable(gl.BLEND);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+        gl.disable(gl.DEPTH_TEST);
+        gl.enable(gl.BLEND);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, this.post8Targets[(i) % 2]);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.post8Targets[(i) % 2]);
 
-      gl.activeTexture(gl.TEXTURE3);
-      gl.bindTexture(gl.TEXTURE_2D, this.gbTargets[(i) % 2]);
+        gl.activeTexture(gl.TEXTURE3);
+        gl.bindTexture(gl.TEXTURE_2D, this.gbTargets[(i) % 2]);
 
-      this.post8Passes[i].draw();
+        gl.activeTexture(gl.TEXTURE4);
+        gl.bindTexture(gl.TEXTURE_2D, this.gbTargets[(i) % 2]);
 
-      // bind default
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.post8Passes[i].draw();
+
+        // bind default
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      //}
     }
   }
 

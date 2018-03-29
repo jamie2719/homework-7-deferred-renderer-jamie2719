@@ -4,7 +4,9 @@ import {vec3, mat4} from 'gl-matrix';
 class Camera {
   controls: any;
   projectionMatrix: mat4 = mat4.create();
+  projMatrixPrev: mat4 = mat4.create();
   viewMatrix: mat4 = mat4.create();
+  viewMatrixPrev: mat4 = mat4.create();
   fovy: number = 45 * 3.1415962 / 180.0;
   aspectRatio: number = 1;
   near: number = 0.1;
@@ -22,6 +24,8 @@ class Camera {
     this.controls.mode = 'turntable';
     vec3.add(this.target, this.position, this.direction);
     mat4.lookAt(this.viewMatrix, this.controls.eye, this.controls.center, this.controls.up);
+    this.viewMatrixPrev = this.viewMatrix;
+    this.projMatrixPrev = this.projectionMatrix;
   }
 
   setAspectRatio(aspectRatio: number) {
@@ -29,10 +33,12 @@ class Camera {
   }
 
   updateProjectionMatrix() {
+    this.projMatrixPrev = this.projectionMatrix;
     mat4.perspective(this.projectionMatrix, this.fovy, this.aspectRatio, this.near, this.far);
   }
 
   update() {
+    this.viewMatrixPrev = this.viewMatrix;
     this.controls.tick();
 
     vec3.add(this.target, this.position, this.direction);

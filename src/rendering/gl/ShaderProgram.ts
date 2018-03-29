@@ -28,10 +28,13 @@ class ShaderProgram {
   attrUV: number;
 
   unifModel: WebGLUniformLocation;
+  unifModelPrev: WebGLUniformLocation;
   unifModelInvTr: WebGLUniformLocation;
   unifViewProj: WebGLUniformLocation;
   unifView: WebGLUniformLocation;
+  unifViewPrev: WebGLUniformLocation;
   unifProj: WebGLUniformLocation;
+  unifProjPrev: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
   unifTime: WebGLUniformLocation;
 
@@ -53,10 +56,13 @@ class ShaderProgram {
     this.attrCol = gl.getAttribLocation(this.prog, "vs_Col");
     this.attrUV = gl.getAttribLocation(this.prog, "vs_UV")
     this.unifModel = gl.getUniformLocation(this.prog, "u_Model");
+    this.unifModelPrev = gl.getUniformLocation(this.prog, "u_ModelPrev");
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifView = gl.getUniformLocation(this.prog, "u_View");
+    this.unifViewPrev = gl.getUniformLocation(this.prog, "u_ViewPrev");
     this.unifProj = gl.getUniformLocation(this.prog, "u_Proj");
+    this.unifProjPrev = gl.getUniformLocation(this.prog, "u_ProjPrev");
     this.unifColor = gl.getUniformLocation(this.prog, "u_Color");
     this.unifTime = gl.getUniformLocation(this.prog, "u_Time")
 
@@ -108,6 +114,13 @@ class ShaderProgram {
     }
   }
 
+  setModelMatrixPrev(model: mat4) {
+    this.use();
+    if (this.unifModelPrev !== -1) {
+      gl.uniformMatrix4fv(this.unifModelPrev, false, model);
+    }
+  }
+
   setViewProjMatrix(vp: mat4) {
     this.use();
     if (this.unifViewProj !== -1) {
@@ -122,10 +135,24 @@ class ShaderProgram {
     }
   }
 
+  setViewMatrixPrev(vp: mat4) {
+    this.use();
+    if (this.unifViewPrev !== -1) {
+      gl.uniformMatrix4fv(this.unifViewPrev, false, vp);
+    }
+  }
+
   setProjMatrix(vp: mat4) {
     this.use();
     if (this.unifProj !== -1) {
       gl.uniformMatrix4fv(this.unifProj, false, vp);
+    }
+  }
+
+  setProjMatrixPrev(vp: mat4) {
+    this.use();
+    if (this.unifProjPrev !== -1) {
+      gl.uniformMatrix4fv(this.unifProjPrev, false, vp);
     }
   }
 
